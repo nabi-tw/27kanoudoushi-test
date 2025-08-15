@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>可能動詞練習ゲーム</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .correct-answer {
+            background-color: #d1fae5;
+            border-color: #10b981;
+            animation: correctPulse 0.6s ease-out;
+        }
+        .wrong-answer {
+            background-color: #fee2e2;
+            border-color: #ef4444;
+            animation: wrongShake 0.6s ease-out;
+        }
+        @keyframes correctPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- ヘッダー -->
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-4 py-6">
+            <h1 class="text-3xl font-bold text-center text-indigo-600">可能動詞練習ゲーム</h1>
+            <p class="text-center text-gray-600 mt-2">ます形から可能動詞を答えましょう！</p>
+        </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- ゲーム設定画面 -->
+        <div id="setupScreen" class="max-w-md mx-auto bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-2xl font-bold text-center mb-6 text-gray-800">ゲーム設定</h2>
+            
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">練習する動詞グループ</label>
+                <div class="space-y-2">
+                    <label class="flex items-center">
+                        <input type="checkbox" id="group1" checked class="rounded text-indigo-600">
+                        <span class="ml-2">Ⅰグループ</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" id="group2" checked class="rounded text-indigo-600">
+                        <span class="ml-2">Ⅱグループ</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" id="group3" checked class="rounded text-indigo-600">
+                        <span class="ml-2">Ⅲグループ</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">問題数</label>
+                <select id="questionCount" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500">
+                    <option value="5">5問</option>
+                    <option value="10" selected>10問</option>
+                    <option value="15">15問</option>
+                    <option value="20">20問</option>
+                </select>
+                <div id="questionCountInfo" class="text-xs text-gray-500 mt-1"></div>
+            </div>
+
+            <button id="startGame" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200">
+                ゲーム開始
+            </button>
+        </div>
+
+        <!-- ゲーム画面 -->
+        <div id="gameScreen" class="hidden max-w-2xl mx-auto">
+            <!-- プログレスバー -->
+            <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-medium text-gray-700">進行状況</span>
+                    <span id="progressText" class="text-sm font-medium text-indigo-600">1 / 10</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div id="progressBar" class="bg-indigo-600 h-2 rounded-full transition-all duration-300" style="width: 10%"></div>
+                </div>
+            </div>
+
+            <!-- スコア表示 -->
+            <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+                <div class="flex justify-between items-center">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-green-600" id="correctCount">0</div>
+                        <div class="text-sm text-gray-600">正解</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-red-600" id="wrongCount">0</div>
+                        <div class="text-sm text-gray-600">不正解</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-blue-600" id="accuracyRate">0%</div>
+                        <div class="text-sm text-gray-600">正答率</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 問題表示 -->
+            <div class="bg-white rounded-lg shadow-md p-8 mb-6 text-center fade-in" id="questionCard">
+                <div class="mb-4">
+                    <span class="text-sm text-gray-500" id="verbGroup">Ⅰグループ</span>
+                </div>
+                <div class="text-5xl font-bold text-gray-800 mb-6" id="verbQuestion">買います</div>
+                <p class="text-gray-600 mb-6">この動詞の可能形は？</p>
+                
+                <input type="text" id="answerInput" class="w-full max-w-md mx-auto text-2xl text-center border-2 border-gray-300 rounded-lg py-3 px-4 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="答えを入力">
+                
+                <div class="mt-6 space-x-4">
+                    <button id="submitAnswer" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200">
+                        回答する
+                    </button>
+                    <button id="skipQuestion" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition duration-200">
+                        スキップ
+                    </button>
+                </div>
+            </div>
+
+            <!-- フィードバック表示 -->
+            <div id="feedback" class="hidden bg-white rounded-lg shadow-md p-6 mb-6 text-center">
+                <div id="feedbackIcon" class="text-6xl mb-4">✅</div>
+                <div id="feedbackText" class="text-xl font-bold mb-4">正解です！</div>
+                <div id="feedbackExplanation" class="text-gray-600 mb-4">
+                    買います → 買えます<br>
+                    Iグループ動詞は「い」を「え」に変えて「ます」をつけます
+                </div>
+                <button id="nextQuestion" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200">
+                    次の問題
+                </button>
+            </div>
+        </div>
+
+        <!-- 結果画面 -->
+        <div id="resultScreen" class="hidden max-w-md mx-auto bg-white rounded-lg shadow-lg p-6 text-center">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800">ゲーム結果</h2>
+            
+            <div class="text-6xl mb-4" id="resultIcon">🎉</div>
+            
+            <div class="space-y-4 mb-6">
+                <div class="flex justify-between">
+                    <span class="font-medium">総問題数:</span>
+                    <span id="totalQuestions">10</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="font-medium text-green-600">正解数:</span>
+                    <span id="finalCorrect" class="text-green-600 font-bold">8</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="font-medium text-red-600">不正解数:</span>
+                    <span id="finalWrong" class="text-red-600 font-bold">2</span>
+                </div>
+                <div class="flex justify-between text-lg">
+                    <span class="font-bold">正答率:</span>
+                    <span id="finalAccuracy" class="font-bold text-blue-600">80%</span>
+                </div>
+            </div>
+
+            <div id="performanceMessage" class="text-lg font-medium mb-6 text-green-600">
+                素晴らしい結果です！
+            </div>
+
+            <div class="space-y-4">
+                <button id="playAgain" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200">
+                    もう一度プレイ
+                </button>
+                <button id="backToSetup" class="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded-lg transition duration-200">
+                    設定に戻る
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- フッター -->
+    <footer class="bg-white shadow-md mt-12">
+        <div class="container mx-auto px-4 py-4 text-center text-gray-600">
+            <p>&copy; 2024 可能動詞練習ゲーム - 日本語学習をサポート</p>
+        </div>
+    </footer>
+
+    <script src="js/verbs.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>
