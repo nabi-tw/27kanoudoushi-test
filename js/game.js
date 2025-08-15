@@ -200,11 +200,9 @@ class VerbGame {
             this.feedbackText.className = 'text-xl font-bold mb-4 text-red-600';
         }
         
-        // 正解候補を表示（配列または文字列に対応）
-        const correctAnswers = Array.isArray(question.potential) ? question.potential : [question.potential];
-        this.feedbackExplanation.innerHTML = `
-            ${question.verb} → ${correctAnswers.join(' / ')}
-        `;
+        // 正解を表示（漢字表記を優先）
+        const correctAnswer = Array.isArray(question.potential) ? question.potential[0] : question.potential;
+        this.feedbackExplanation.innerHTML = `${question.verb} → ${correctAnswer}`;
     }
     
     nextQuestion() {

@@ -95,3 +95,13 @@ function getVerbGroup(verb) {
     if (verbsDatabase.group3.some(v => v.verb === verb)) return 'Ⅲグループ';
     return '';
 }
+
+// 答えが正解かどうかをチェックする関数
+function isCorrectAnswer(userAnswer, question) {
+    return question.potential.includes(userAnswer);
+}
+
+// 正解を取得する関数（表示用）
+function getCorrectAnswer(question) {
+    return question.potential[0]; // 最初の（漢字）正解を返す
+}
