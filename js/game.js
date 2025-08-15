@@ -159,7 +159,9 @@ class VerbGame {
         }
         
         const currentQuestion = this.questions[this.currentQuestionIndex];
-        const isCorrect = userAnswer === currentQuestion.potential;
+        // 複数の正解候補をチェック（配列または文字列に対応）
+        const potentialAnswers = Array.isArray(currentQuestion.potential) ? currentQuestion.potential : [currentQuestion.potential];
+        const isCorrect = potentialAnswers.includes(userAnswer);
         
         this.showFeedback(isCorrect, currentQuestion);
         
@@ -198,9 +200,10 @@ class VerbGame {
             this.feedbackText.className = 'text-xl font-bold mb-4 text-red-600';
         }
         
+        // 正解候補を表示（配列または文字列に対応）
+        const correctAnswers = Array.isArray(question.potential) ? question.potential : [question.potential];
         this.feedbackExplanation.innerHTML = `
-            ${question.verb} → ${question.potential}<br>
-            ${question.explanation}
+            ${question.verb} → ${correctAnswers.join(' / ')}
         `;
     }
     
