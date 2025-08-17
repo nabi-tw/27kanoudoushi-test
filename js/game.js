@@ -7,6 +7,7 @@ class VerbGame {
         this.wrongAnswers = 0;
         this.totalQuestions = 0;
         this.selectedGroups = [];
+        this.isAnswered = false; // 回答済みフラグを追加
         
         this.initializeElements();
         this.bindEvents();
@@ -143,6 +144,14 @@ class VerbGame {
         this.answerInput.value = '';
         this.answerInput.focus();
         
+        // 回答済みフラグをリセット
+        this.isAnswered = false;
+        
+        // ボタンとインプットを有効化
+        this.submitAnswerButton.disabled = false;
+        this.skipQuestionButton.disabled = false;
+        this.answerInput.disabled = false;
+        
         // カードのアニメーションをリセット
         this.questionCard.classList.remove('correct-answer', 'wrong-answer');
         
@@ -151,12 +160,20 @@ class VerbGame {
     }
     
     submitAnswer() {
+        // 既に回答済みの場合は処理を停止
+        if (this.isAnswered) {
+            return;
+        }
+        
         const userAnswer = this.answerInput.value.trim();
         
         if (!userAnswer) {
             alert('答えを入力してください。');
             return;
         }
+        
+        // 回答済みフラグを設定
+        this.isAnswered = true;
         
         const currentQuestion = this.questions[this.currentQuestionIndex];
         // 複数の正解候補をチェック（配列または文字列に対応）
@@ -173,13 +190,32 @@ class VerbGame {
             this.questionCard.classList.add('wrong-answer');
         }
         
+        // ボタンを無効化
+        this.submitAnswerButton.disabled = true;
+        this.skipQuestionButton.disabled = true;
+        this.answerInput.disabled = true;
+        
         this.updateGameUI();
     }
     
     skipQuestion() {
+        // 既に回答済みの場合は処理を停止
+        if (this.isAnswered) {
+            return;
+        }
+        
+        // 回答済みフラグを設定
+        this.isAnswered = true;
+        
         const currentQuestion = this.questions[this.currentQuestionIndex];
         this.wrongAnswers++;
         this.showFeedback(false, currentQuestion, true);
+        
+        // ボタンを無効化
+        this.submitAnswerButton.disabled = true;
+        this.skipQuestionButton.disabled = true;
+        this.answerInput.disabled = true;
+        
         this.updateGameUI();
     }
     

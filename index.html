@@ -127,13 +127,13 @@
                 <div class="text-5xl font-bold text-gray-800 mb-6" id="verbQuestion">買います</div>
                 <p class="text-gray-600 mb-6">この動詞の可能形は？</p>
                 
-                <input type="text" id="answerInput" class="w-full max-w-md mx-auto text-2xl text-center border-2 border-gray-300 rounded-lg py-3 px-4 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="答えを入力">
+                <input type="text" id="answerInput" class="w-full max-w-md mx-auto text-2xl text-center border-2 border-gray-300 rounded-lg py-3 px-4 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed" placeholder="答えを入力">
                 
                 <div class="mt-6 space-x-4">
-                    <button id="submitAnswer" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200">
+                    <button id="submitAnswer" class="bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-bold py-3 px-6 rounded-lg transition duration-200">
                         回答する
                     </button>
-                    <button id="skipQuestion" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition duration-200">
+                    <button id="skipQuestion" class="bg-gray-500 hover:bg-gray-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-3 px-6 rounded-lg transition duration-200">
                         スキップ
                     </button>
                 </div>
